@@ -5,17 +5,17 @@ use Data::Dumper;
 use Test::More tests => 1;
 
  my $testing_ite = mx->io->ImageRecordIter(
- {  batch_size => 100, data_shape=> [1,28,28],label_width =>1, path_imgrec => "testing.rec", path_root => '.' });
+ {  batch_size => 5, data_shape=> [1,128,128],label_width =>1, path_imgrec => "testing.rec", path_root => '.' });
 
 
  my $training_ite = mx->io->ImageRecordIter(
- {  batch_size => 100, data_shape=> [1,28,28],label_width =>1, path_imgrec => "training.rec", path_root => '.' , shuffle => 1, shuffle_chunk_size => 1000 });
+ {  batch_size => 5, data_shape=> [1,128,128],label_width =>1, path_imgrec => "training.rec", path_root => '.' , shuffle => 1, shuffle_chunk_size => 1000 });
 
 
-# for my $data (@{$training_ite}){
-#   print Dumper($data);
-#   print $data->data->[0]->aspdl;
-#   print $data->label->[0]->aspdl;
+# for my $xx (@{$training_ite}){
+#   print Dumper($xx);
+#   print $xx->data->[0]->aspdl;
+#   print $xx->label->[0]->aspdl;
 # }
 
 # Create a place holder variable for the input data
@@ -45,7 +45,8 @@ $model->fit(
    $training_ite,
    eval_data => $testing_ite,
    optimizer => 'adam',
-   num_epoch=>2
+   num_epoch=>20
 );
 my $res = $model->score($testing_ite, mx->metric->create('acc'));
+print $res->{accuracy};
 ok($res->{accuracy} > 0.8);
