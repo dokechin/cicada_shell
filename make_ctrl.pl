@@ -3,8 +3,10 @@ use warnings;
 
 open my $train, ">./training.ctl";
 open my $test, ">./testing.ctl";
-my @png = glob "./*/*/*.jpg";
-my $id = 0;
+my @png = glob "./testing/*/*.jpg ./training/*/*.jpg";
+my $label_index = 0;
+my $image = {};
+my $label = {};
 for my $png(@png){
   $png =~ /(training|testing)\/(\w+)\/(\w+)\.jpg/;
   my $file;
@@ -15,15 +17,19 @@ for my $png(@png){
   else{
       $file = $test;
   }
-  if ($2 eq "cryptotympana_facialis"){
-      $index = 0;
+  if (!defined ($image->{$1})){
+    $image->{$1} = 0; 
   }
   else{
-      $index = 1;
+    $image->{$1} = $image->{$1} + 1; 
   }
-  printf $file "%d\t%d\t./%s/%s/%s.jpg\n", $id++ , $index, $1 , $2, $3;
-}
+  
 
+  if (!defined ($label->{$2})){
+    $label->{$2} = $label_index++; 
+  } 
+  printf $file "%d\t%d\t./%s/%s/%s.jpg\n", $image->{$1} , $label->{$2}, $1 , $2, $3;
+}
 close $train;
 close $test;
 
